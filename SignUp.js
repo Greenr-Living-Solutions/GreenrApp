@@ -1,13 +1,22 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Platform, StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Alert, ScrollView } from 'react-native';
+
+var socket = new WebSocket("ws://192.168.1.68:8000");
+
+socket.onopen = function(event) {
+}
+
+
 
 export default function SignUp({navigation}) {
  
     const [username, usernameInput] = React.useState('sustainablejoe');
     const [password, passwordInput] = React.useState('*****');
+    const [passwordtwo, passwordtwoInput] = React.useState('*****');
     return (
        <View style={styles.background}>
+           <ScrollView>
            <View style={styles.button}>
                 <Button
                     color = 'tomato'
@@ -15,7 +24,6 @@ export default function SignUp({navigation}) {
                     onPress = {() => navigation.navigate('WelcomeScreen')}
                 />
            </View>
-           
            <View style={styles.textContainer}>
                 <Text style={styles.welcomeFont}>
                     Ready to take the next step?
@@ -37,6 +45,14 @@ export default function SignUp({navigation}) {
                 onChangeText={text => passwordInput(text)}
                 value={password}
                />
+               <Text style={styles.logoSubtitleFont}>
+                   re-type password
+               </Text>
+               <TextInput
+               style={{ height: 40, borderColor: 'tomato', borderWidth: 2 }}
+               onChangeText={text => passwordtwoInput(text)}
+               value={passwordtwo}
+               />
                <View style= {{
                    flex: 1,
                    flexDirection: 'row'
@@ -44,11 +60,44 @@ export default function SignUp({navigation}) {
                    <Button
                     color = 'tomato'
                     title = 'sign up'
-                    onPress = {() => console.log(" button pushed")}
+                    onPress = {() => {
+                        if (password != passwordtwo) {
+                            Alert.alert(
+                                "Whoopsie!",
+                                "Your passwords don't match. Please try again.",
+                                [
+                                  {
+                                    text: "Cancel",
+                                    onPress: () => console.log("Cancel Pressed"),
+                                    style: "cancel"
+                                  },
+                                ],
+                                { cancelable: false }
+                              );
+                        }
+                        else {
+                            socket.send(username + " " + password);
+                            Alert.alert(
+                                "Congratulations!",
+                                "Login with your newly-made credentials and you will be on your way.",
+                                [
+                                  {
+                                    text: "Let's go!",
+                                    onPress: () => console.log("Cancel Pressed"),
+                                    style: "cancel"
+                                  },
+                                ],
+                                { cancelable: false }
+                              );
+                            navigation.navigate('LoginScreen')
+                        }
+                        
+                    }}
                 />
 
                </View>
            </View>
+           </ScrollView>
        </View>
     );
 }
@@ -83,3 +132,4 @@ const styles = StyleSheet.create({
         flex: .25,
     },
 })
+
