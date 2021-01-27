@@ -22,7 +22,6 @@ export default function WelcomeScreen({navigation}) {
           <Button
              color='tomato'
              title= 'Sign-Up'
-             fontFamily= 'AppleSDGothicNeo-UltraLight'
              onPress={() => navigation.navigate('SignupScreen')}
            />
         </View>
@@ -41,7 +40,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
     },
     logoContainer: {
-      flex: 1.2,
+      flex: 1.4,
       alignItems: 'center',
       justifyContent: 'flex-start',
       top: '5%',
