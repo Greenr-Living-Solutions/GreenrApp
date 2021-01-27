@@ -1,6 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Platform, StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { Platform, StyleSheet, Text, View, Button, TextInput, Alert, ScrollView } from 'react-native';
+
+var socket = new WebSocket("ws://192.168.1.68:8000");
+
+socket.onopen = function(event) {
+}
 
 
 export default function Login({navigation}) {
@@ -9,6 +14,7 @@ export default function Login({navigation}) {
     const [password, passwordInput] = React.useState('*****');
     return (
        <View style={styles.background}>
+           <ScrollView>
            <View style={styles.button}>
                 <Button
                     color = 'tomato'
@@ -41,10 +47,33 @@ export default function Login({navigation}) {
                    <Button
                     color = 'tomato'
                     title = 'login'
+                    onPress = {() => {
+                        socket.send("Login " + username + " " + password)
+                        socket.onmessage = (event) => {
+                            if (event.data == "True") {
+                                navigation.navigate("Home");
+                            }
+                            else if (event.data == "False") {
+                                Alert.alert(
+                                    "Whoopsie!",
+                                    "Looks like that user doesn't exist. Please try again.",
+                                    [
+                                      {
+                                        text: "ok :(",
+                                        onPress: () => console.log("Cancel Pressed"),
+                                        style: "cancel"
+                                      },
+                                    ],
+                                    { cancelable: false }
+                                  );
+                            }
+                        }
+                    }}
                 />
 
                </View>
            </View>
+           </ScrollView>
        </View>
     );
 }
